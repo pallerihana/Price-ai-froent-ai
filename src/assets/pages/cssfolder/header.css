@@ -1,0 +1,7 @@
+.banner-pic{
+    background-image: url("./anil-aa.jpg");
+    height: 200px;
+    border-radius:2px;
+    background-size: cover;
+    border: 1px dotted black;
+}
