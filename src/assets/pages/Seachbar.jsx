@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaMicrophone,
@@ -7,6 +7,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import "./cssfolder/search.css";
+import { maindata } from "../datasets/all_services_list";
 
 const API_KEY = "8bea09bdb4f249b38e90dbebd60c0e60"; // OpenCage API Key
 
@@ -16,6 +17,9 @@ const Search = () => {
   const [isListening, setIsListening] = useState(false);
   const [locationModalOpen, setLocationModalOpen] = useState(false);
   const [locationInput, setLocationInput] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const suggestionsRef = useRef(null);
   const navigate = useNavigate();
 
   const placeholders = [
@@ -32,10 +36,53 @@ const Search = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    // Close suggestions when clicking outside
+    const handleClickOutside = (event) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (input.trim() === "") {
+      setSuggestions([]);
+      return;
+    }
+
+    // Get unique service names from maindata
+    const allServices = [...new Set(maindata.map(item => item.s_name))];
+    
+    // Filter services that match the input
+    const matchedServices = allServices.filter(service =>
+      service.toLowerCase().includes(input.toLowerCase())
+    );
+
+    // Also suggest the exact input if it's not already in the list
+    if (input.trim() && !matchedServices.includes(input.trim())) {
+      matchedServices.unshift(input.trim());
+    }
+
+    setSuggestions(matchedServices.slice(0, 5)); // Show top 5 suggestions
+    setShowSuggestions(matchedServices.length > 0);
+  }, [input]);
+
   const handleSearch = () => {
     const trimmedInput = input.trim();
     if (trimmedInput === "") return;
     navigate(`/results/${trimmedInput}`);
+    setShowSuggestions(false);
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setInput(suggestion);
+    setShowSuggestions(false);
+    navigate(`/results/${suggestion}`);
   };
 
   const handleVoiceSearch = () => {
@@ -119,15 +166,34 @@ const Search = () => {
   };
 
   return (
-    <div className="mainsearchbar">
-      <input
-        type="text"
-        placeholder={placeholders[placeholderIndex]}
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-        className="search-input"
-      />
+    <div className="mainsearchbar" ref={suggestionsRef}>
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder={placeholders[placeholderIndex]}
+          value={input}
+          onChange={(e) => {
+            setInput(e.target.value);
+            setShowSuggestions(true);
+          }}
+          onFocus={() => input.trim() && setShowSuggestions(true)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          className="search-input"
+        />
+        {showSuggestions && suggestions.length > 0 && (
+          <ul className="suggestions-list">
+            {suggestions.map((suggestion, index) => (
+              <li
+                key={index}
+                onClick={() => handleSuggestionClick(suggestion)}
+                className="suggestion-item"
+              >
+                {suggestion}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
       <button
         onClick={handleSearch}
         className="search-button"

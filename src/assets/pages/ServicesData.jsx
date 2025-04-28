@@ -1,9 +1,9 @@
+
 import React, { useContext, useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { maindata } from "../datasets/all_services_list";
 import "./cssfolder/searchdata.css";
 import { CompareContext } from "./CompareContext";
-import { Link } from "react-router-dom";
 import { FaHospital, FaUserMd, FaRandom, FaStar, FaTimes } from "react-icons/fa";
 import HeaderPage from "./HeaderPage";
 import Footerpage from "./FooterPage";
@@ -11,16 +11,38 @@ import Footerpage from "./FooterPage";
 const ServicesData = () => {
   const { query } = useParams();
   const { addToCompare, removeFromCompare, compareItems } = useContext(CompareContext);
+  const navigate = useNavigate();
   const [costFilter, setCostFilter] = useState("lowToHigh");
   const [costRangeFilter, setCostRangeFilter] = useState("all");
   const [distanceFilter, setDistanceFilter] = useState("default");
-  const [ratingFilter, setRatingFilter] = useState("all"); // New rating filter state
+  const [ratingFilter, setRatingFilter] = useState("all");
+  const [serviceTypeFilter, setServiceTypeFilter] = useState("all");
   const [filteredData, setFilteredData] = useState([]);
   const [comparedItems, setComparedItems] = useState([]);
 
   const lowerQuery = query?.toLowerCase();
 
-  // Generate consistent random rating (1-5) based on service ID
+  const serviceTypeOptions = [
+    "All Services",
+    "Cardiology",
+    "Neurology",
+    "Oncology",
+    "Orthopedics",
+    "Gastroenterology",
+    "Nephrology",
+    "Endocrinology",
+    "Urology",
+    "Pulmonology",
+    "Dermatology",
+    "Pediatrics",
+    "Obstetrics",
+    "General Surgery",
+    "Ophthalmology",
+    "Otolaryngology_ENT",
+    "Infectious_Diseases",
+    "Psychiatry",
+  ];
+
   const getServiceRating = (s_id) => {
     let hash = 0;
     for (let i = 0; i < s_id.length; i++) {
@@ -29,11 +51,10 @@ const ServicesData = () => {
     return (Math.abs(hash) % 5) + 1;
   };
 
-  // Handle compare button click
   const handleCompareClick = (item) => {
     if (comparedItems.includes(item.id)) {
       removeFromCompare(item.id);
-      setComparedItems(comparedItems.filter(id => id !== item.id));
+      setComparedItems(comparedItems.filter((id) => id !== item.id));
     } else {
       addToCompare(item);
       setComparedItems([...comparedItems, item.id]);
@@ -42,6 +63,7 @@ const ServicesData = () => {
 
   const applyFilters = (data) => {
     let result = [...data].filter((s) => {
+      // Match query across fields
       const matchServiceName = s.s_name?.toLowerCase().includes(lowerQuery);
       const matchHospitalName = s.h_name?.toLowerCase().includes(lowerQuery);
       const matchAddress = s.h_address?.toLowerCase().includes(lowerQuery);
@@ -59,6 +81,16 @@ const ServicesData = () => {
         if (charge < min || charge > max) return false;
       }
 
+      // Service type filtering
+      if (serviceTypeFilter !== "all" && serviceTypeFilter !== "All Services") {
+        const serviceTypeMatch =
+          s.s_name?.toLowerCase().includes(serviceTypeFilter.toLowerCase()) ||
+          s.types?.some((typeObj) =>
+            Object.values(typeObj)[0]?.toLowerCase().includes(serviceTypeFilter.toLowerCase())
+          );
+        if (!serviceTypeMatch) return false;
+      }
+
       return (
         matchServiceName ||
         matchHospitalName ||
@@ -70,18 +102,16 @@ const ServicesData = () => {
       );
     });
 
-    // Add ratings to each service
-    result = result.map(service => ({
+    // Add ratings
+    result = result.map((service) => ({
       ...service,
-      rating: getServiceRating(service.id)
+      rating: getServiceRating(service.id),
     }));
 
     // Rating filtering
     if (ratingFilter !== "all") {
       const selectedRating = parseInt(ratingFilter);
-      result = result.filter(service => 
-        Math.floor(service.rating) === selectedRating
-      );
+      result = result.filter((service) => Math.floor(service.rating) === selectedRating);
     }
 
     // Cost sorting
@@ -93,7 +123,7 @@ const ServicesData = () => {
       return costFilter === "highToLow" ? chargeB - chargeA : chargeA - chargeB;
     });
 
-    // Randomize when distance filter is selected
+    // Randomize for distance filter
     if (distanceFilter !== "default") {
       for (let i = result.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -104,36 +134,30 @@ const ServicesData = () => {
     return result;
   };
 
-  const uniqueServices = [...new Set(maindata.map(item => item.s_name))];
-  const uniqueHospitals = [...new Set(maindata.map(item => item.h_name))];
+  const uniqueServices = [...new Set(maindata.map((item) => item.s_name))];
+  const uniqueHospitals = [...new Set(maindata.map((item) => item.h_name))];
 
   useEffect(() => {
     setFilteredData(applyFilters(maindata));
-  }, [query, costFilter, costRangeFilter, distanceFilter, ratingFilter]);
+  }, [query, costFilter, costRangeFilter, distanceFilter, ratingFilter, serviceTypeFilter]);
 
   const calculateDiscount = (charge) => {
     const baseCharge = parseFloat(charge?.replace("₹", "").replace(/,/g, "") || "0");
     const discount = baseCharge * 0.2;
-    return `₹${(baseCharge - discount).toLocaleString('en-IN')} (Save 20%)`;
+    return `₹${(baseCharge - discount).toLocaleString("en-IN")} (Save 20%)`;
   };
 
-  // Render star ratings
   const renderStars = (rating) => {
     return (
       <div className="rating-stars">
         {[...Array(5)].map((_, i) => (
-          <FaStar 
-            key={i} 
-            color={i < rating ? "#ffc107" : "#e4e5e9"} 
-            size={16} 
-          />
+          <FaStar key={i} color={i < rating ? "#ffc107" : "#e4e5e9"} size={16} />
         ))}
         <span className="rating-text">({rating.toFixed(1)})</span>
       </div>
     );
   };
 
-  // Cost range options
   const costRangeOptions = [
     { value: "all", label: "All Prices" },
     { value: "10000-20000", label: "₹10,000 - ₹20,000" },
@@ -143,18 +167,28 @@ const ServicesData = () => {
     { value: "50000-60000", label: "₹50,000 - ₹60,000" },
     { value: "60000-70000", label: "₹60,000 - ₹70,000" },
     { value: "70000-80000", label: "₹70,000 - ₹80,000" },
-    { value: "80000-90000", label: "₹80,000 - ₹90,000" }
+    { value: "80000-90000", label: "₹80,000 - ₹90,000" },
   ];
 
-  // Rating filter options
   const ratingOptions = [
     { value: "all", label: "All Ratings" },
     { value: "5", label: "★★★★★" },
     { value: "4", label: "★★★★☆" },
     { value: "3", label: "★★★☆☆" },
     { value: "2", label: "★★☆☆☆" },
-    { value: "1", label: "★☆☆☆☆" }
+    { value: "1", label: "★☆☆☆☆" },
   ];
+
+  // Updated: Navigate to ServiceDetails page on service click
+  const handleServiceClick = (service) => {
+    if (service === "All Services") {
+      navigate(`/`); // Reset to main search page
+    } else {
+      // Encode service name for URL (replace spaces with underscores)
+      const encodedService = encodeURIComponent(service.replace(/ /g, "_"));
+      navigate(`/results/${encodedService}`);
+    }
+  };
 
   return (
     <>
@@ -162,17 +196,16 @@ const ServicesData = () => {
       <div className="colorofsearch">
         <h3 className="result_for">Recommended Services</h3>
         <div className="filter-boxes">
-          <select 
-            value={costFilter} 
+          <select
+            value={costFilter}
             onChange={(e) => setCostFilter(e.target.value)}
             className="w-48 p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 hover:bg-gray-50"
           >
             <option value="lowToHigh">Price: Low to High</option>
             <option value="highToLow">Price: High to Low</option>
           </select>
-          
-          <select 
-            value={costRangeFilter} 
+          <select
+            value={costRangeFilter}
             onChange={(e) => setCostRangeFilter(e.target.value)}
             className="w-48 p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 hover:bg-gray-50"
           >
@@ -182,9 +215,8 @@ const ServicesData = () => {
               </option>
             ))}
           </select>
-          
-          <select 
-            value={distanceFilter} 
+          <select
+            value={distanceFilter}
             onChange={(e) => setDistanceFilter(e.target.value)}
             className="w-48 p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 hover:bg-gray-50"
           >
@@ -194,10 +226,8 @@ const ServicesData = () => {
             <option value="10km to 15km">10km to 15km</option>
             <option value="15km to 20km">15km to 20km</option>
           </select>
-
-          {/* New Rating Filter */}
-          <select 
-            value={ratingFilter} 
+          <select
+            value={ratingFilter}
             onChange={(e) => setRatingFilter(e.target.value)}
             className="w-48 p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 hover:bg-gray-50"
           >
@@ -207,28 +237,76 @@ const ServicesData = () => {
               </option>
             ))}
           </select>
+          <select
+            value={serviceTypeFilter}
+            onChange={(e) => setServiceTypeFilter(e.target.value)}
+            className="w-48 p-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 hover:bg-gray-50"
+          >
+            {serviceTypeOptions.map((option) => (
+              <option key={option} value={option === "All Services" ? "all" : option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </div>
-        
+
         <div className="main-all-box-data">
           <div className="service-hospitals">
             <div className="serv-list">
               <b>Services</b>
               <hr />
+              <div
+                onClick={() => handleServiceClick("All Services")}
+                style={{
+                  cursor: "pointer",
+                  padding: "5px",
+                  backgroundColor: !query ? "#e0f7fa" : "transparent",
+                  borderRadius: "4px",
+                }}
+              >
+                <p>All Services</p>
+              </div>
               {uniqueServices.map((service, index) => (
-                <div key={index}>
+                <div
+                  key={index}
+                  onClick={() => handleServiceClick(service)}
+                  style={{
+                    cursor: "pointer",
+                    padding: "5px",
+                    backgroundColor:
+                      query &&
+                      decodeURIComponent(query.replace(/_/g, " ")).toLowerCase() ===
+                        service.toLowerCase()
+                        ? "#e0f7fa"
+                        : "transparent",
+                    borderRadius: "4px",
+                  }}
+                >
                   <p>{service}</p>
                 </div>
               ))}
             </div>
             <div className="serv-list">
-              <b><FaHospital /> Hospitals</b>
-              <hr />
-              {uniqueHospitals.map((hospital, index) => (
-                <div key={index}>
-                  <p>{hospital}</p>
-                </div>
-              ))}
-            </div>
+  <b>
+    <FaHospital /> Hospitals
+  </b>
+  <hr />
+  {uniqueHospitals.map((hospital, index) => (
+    <div 
+      key={index}
+      onClick={() => navigate(`/hospital/${encodeURIComponent(hospital)}`)}
+      style={{
+        cursor: "pointer",
+        padding: "5px",
+        borderRadius: "4px",
+        transition: "background-color 0.2s ease"
+      }}
+      className="hospital-item"
+    >
+      <p>{hospital}</p>
+    </div>
+  ))}
+</div>
           </div>
 
           <div className="fildataalign">
@@ -236,22 +314,13 @@ const ServicesData = () => {
               <p>No results found</p>
             ) : (
               filteredData.map((item) => (
-                <div 
-                  key={item.id} 
-                  className={`imgdivion ${comparedItems.includes(item.id) ? 'compared-item' : ''}`}
+                <div
+                  key={item.id}
+                  className={`imgdivion ${comparedItems.includes(item.id) ? "compared-item" : ""}`}
                 >
                   {comparedItems.includes(item.id) && (
                     <div className="compare-badge">
-                      {compareItems.findIndex(i => i.id === item.id) + 1}
-                      {/* <button 
-                        className="remove-compare"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCompareClick(item);
-                        }}
-                      >
-                        <FaTimes size={10} />
-                      </button> */}
+                      {compareItems.findIndex((i) => i.id === item.id) + 1}
                     </div>
                   )}
                   <div className="imgdivision1">
@@ -268,7 +337,7 @@ const ServicesData = () => {
                       <div className="s-code">
                         <span className="score">service code</span>
                         <p className="count">{item.s_code}</p>
-                        <p style={{ margin: '2px 10px' }}>{renderStars(item.rating)}</p>
+                        <p style={{ margin: "2px 10px" }}>{renderStars(item.rating)}</p>
                       </div>
                       <div className="s-data">
                         <div className="s-left">
@@ -285,9 +354,9 @@ const ServicesData = () => {
                       <hr />
                       <div className="s-disci">
                         <p>{item.s_description}</p>
-                        <button 
+                        <button
                           onClick={() => handleCompareClick(item)}
-                          className={`compare-btn ${comparedItems.includes(item.id) ? 'active' : ''}`}
+                          className={`compare-btn ${comparedItems.includes(item.id) ? "active" : ""}`}
                         >
                           {comparedItems.includes(item.id) ? (
                             <FaTimes color="white" size={20} />
@@ -303,16 +372,11 @@ const ServicesData = () => {
             )}
           </div>
         </div>
-        
-        <Link 
-          to="/compare" 
-          className="compare-button"
-        >
+
+        <Link to="/compare" className="compare-button">
           Compare
           {compareItems.length > 0 && (
-            <span className="compare-count">
-              {compareItems.length}
-            </span>
+            <span className="compare-count">{compareItems.length}</span>
           )}
         </Link>
       </div>
@@ -403,9 +467,6 @@ const ServicesData = () => {
             font-weight: bold;
             z-index: 10;
           }
-          // .remove-compare {
-            
-          // }
           .compare-btn {
             background-color: #6c757d;
             border: none;
@@ -419,8 +480,12 @@ const ServicesData = () => {
             transition: all 0.3s ease;
           }
           .compare-btn.active {
-            background-color:red;
+            background-color: red;
             transform: scale(1);
+          }
+          .serv-list div:hover {
+            background-color: #f0f0f0;
+            transition: background-color 0.2s ease;
           }
           @media (max-width: 640px) {
             .filter-boxes {

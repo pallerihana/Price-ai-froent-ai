@@ -6,6 +6,7 @@ import Compare from "./assets/pages/Compare";
 import SingleData from "./assets/pages/SingleData";
 import SignUpLogin from "./assets/pages/SignUpLogin"; // Import the SignUpLogin component
 import HospitalDetails from "./assets/pages/HospitalDetails";
+import BookingsPage from "./assets/pages/BookingsPage";
 
 const App = () => {
   return (
@@ -17,6 +18,8 @@ const App = () => {
         <Route path="/single/:id" element={<SingleData />} />
         <Route path="/service/:id" element={<SingleData />} />
         <Route path="/hospital/:hospitalName" element={<HospitalDetails />} />
+        // In your router configuration
+<Route path="/bookings" element={<BookingsPage />} />
         <Route path="/auth" element={<SignUpLogin />} /> {/* Add route for SignUpLogin */}
       </Routes>
     </div>

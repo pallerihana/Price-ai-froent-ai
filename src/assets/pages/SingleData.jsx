@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { maindata } from "../datasets/all_services_list";
 import HeaderPage from "./HeaderPage";
 import Footerpage from "./FooterPage";
+import { useBooking } from './BookingContext';
+import { FaClipboardList } from 'react-icons/fa';
 import {
   FaHospital,
   FaUserMd,
@@ -19,6 +21,7 @@ import {
 } from "react-icons/fa";
 import RatingAndReview from "./RatingAndReview";
 import Recommended from "./Recommended";
+
 
 const insuranceData = [
   { name: "TATA AIG", plans: ["Gold", "Silver", "Platinum", "Basic", "Plus"] },
@@ -438,8 +441,11 @@ const styleSheet = document.styleSheets[0];
 styleSheet.insertRule(spin, styleSheet.cssRules.length);
 
 const SingleData = () => {
+  const { addBooking } = useBooking();
+  const { bookings } = useBooking();
   const { id } = useParams();
   const navigate = useNavigate();
+ 
   const [loading, setLoading] = useState(true);
   const [service, setService] = useState(null);
   const [network, setNetwork] = useState("");
@@ -454,6 +460,20 @@ const SingleData = () => {
     phone: "",
     paymentMethod: "",
   });
+
+  // ----------------------------------------------
+  const pulseAnimation = `
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+`;
+
+// Add the animation to your stylesheet
+const styleSheet = document.styleSheets[0];
+styleSheet.insertRule(pulseAnimation, styleSheet.cssRules.length);
+// --------------------------------------------------------
 
   // Scroll to top when component mounts or id changes
   useEffect(() => {
@@ -514,7 +534,14 @@ const SingleData = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    console.log("Booking confirmed for:", formData);
+    addBooking({
+      serviceName: service.s_name,
+      hospitalName: service.h_name,
+      doctorName: service.d_name,
+      finalAmount: finalAmount,
+      serviceType: selectedServiceType || service.types[0]?.type,
+      paymentMethod: formData.paymentMethod
+    });
     alert(`Booking confirmed! Confirmation email sent to ${formData.email}`);
     setShowModal(false);
     setFormData({ name: "", email: "", phone: "", paymentMethod: "" });
@@ -848,6 +875,52 @@ const SingleData = () => {
               <button style={styles.btnSecondary}>
                 <FaPhone /> Contact Hospital
               </button>
+              <button 
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        backgroundColor: '#3498db',
+        color: 'white',
+        border: 'none',
+        padding: '15px 25px',
+        borderRadius: '50px',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+        zIndex: 100,
+        fontSize: '16px',
+        fontWeight: '600',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          transform: 'translateY(-2px)',
+          boxShadow: '0 6px 12px rgba(0,0,0,0.3)'
+        }
+      }}
+      onClick={() => navigate('/bookings')}
+    >
+      <FaClipboardList size={18} />
+      My Bookings
+      {bookings.length > 0 && (
+        <span style={{
+          backgroundColor: '#e74c3c',
+          color: 'white',
+          borderRadius: '50%',
+          width: '24px',
+          height: '24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '12px',
+          marginLeft: '8px',
+          animation: 'pulse 1.5s infinite'
+        }}>
+          {bookings.length}
+        </span>
+      )}
+    </button>
             </div>
           </div>
         </div>
