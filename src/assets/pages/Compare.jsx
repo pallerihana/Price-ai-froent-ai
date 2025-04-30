@@ -154,7 +154,7 @@ const Compare = () => {
       <div className="compare-wrapper">
         <div className="compare-header">
           <MdCompareArrows size={28} style={{ marginRight: "10px" }} />
-          Compare Services
+          Compare Hospitals
         </div>
 
         <div className="compare-box">

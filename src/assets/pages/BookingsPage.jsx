@@ -642,7 +642,7 @@ Status: ${booking.status}
             onChange={(e) => setStatusFilter(e.target.value)}
             aria-label="Filter by status"
           >
-            <option value="all">All Statuses</option>
+            <option value="all">All Status</option>
             <option value="Confirmed">Confirmed</option>
             <option value="Completed">Completed</option>
             <option value="Cancelled">Cancelled</option>

@@ -21,7 +21,7 @@ import {
 } from "react-icons/fa";
 import RatingAndReview from "./RatingAndReview";
 import Recommended from "./Recommended";
-
+import emailjs from '@emailjs/browser';
 
 const insuranceData = [
   { name: "TATA AIG", plans: ["Gold", "Silver", "Platinum", "Basic", "Plus"] },
@@ -287,131 +287,110 @@ const styles = {
     position: "relative",
     display: "inline-block",
   },
- 
-    doctorTooltipRight: {
-      position: "absolute",
-      top: "250%",
-      left: "calc(100% + 15px)",
-      transform: "translateY(-50%)",
-      backgroundColor: "#ffffff",
-      padding: "18px",
-      borderRadius: "10px",
-      width: "280px",
-      boxShadow: "1px 10px 20px rgba(2, 2, 2, 0.15)",
-      border: "1px solid #e0e0e0",
-      zIndex: 10,
-      display: "flex",
-      flexDirection: "column",
-      gap: "12px",
-      opacity: 0,
-      transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
-      pointerEvents: "none",
-      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    },
-    
-    doctorHoverContainer: {
-      position: "relative",
-      display: "inline-block",
-    },
-  
-    doctorProfileHeader: {
-      display: "flex",
-      alignItems: "center",
-      gap: "12px",
-    },
-  
-    doctorImage: {
-      width: "56px",
-      height: "56px",
-      borderRadius: "50%",
-      objectFit: "cover",
-      backgroundColor: "#f5f7fa",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontSize: "22px",
-      color: "#64748b",
-      border: "2px solid #e2e8f0",
-    },
-  
-    doctorInfo: {
-      display: "flex",
-      flexDirection: "column",
-      gap: "4px",
-    },
-  
-    doctorName: {
-      fontWeight: "600",
-      fontSize: "15px",
-      color: "#1e293b",
-      letterSpacing: "0.2px",
-    },
-  
-    doctorMeta: {
-      fontSize: "12px",
-      color: "#64748b",
-      lineHeight: "1.4",
-    },
-  
-    doctorRating: {
-      display: "flex",
-      alignItems: "center",
-      gap: "4px",
-      color: "#f59e0b",
-      fontWeight: "500",
-    },
-  
-    doctorDetails: {
-      display: "flex",
-      flexDirection: "column",
-      gap: "10px",
-      fontSize: "13px",
-      color: "#475569",
-      padding: "8px 0",
-      borderTop: "1px solid #f1f5f9",
-      borderBottom: "1px solid #f1f5f9",
-      margin: "6px 0",
-    },
-  
-    detailRow: {
-      display: "flex",
-      alignItems: "center",
-      gap: "10px",
-    },
-  
-    detailIcon: {
-      color: "#94a3b8",
-      minWidth: "16px",
-      display: "flex",
-      justifyContent: "center",
-    },
-  
-    messageButton: {
-      backgroundColor: "#3b82f6",
-      color: "white",
-      border: "none",
-      padding: "10px",
-      borderRadius: "6px",
-      fontWeight: "600",
-      fontSize: "13px",
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: "6px",
-      marginTop: "4px",
-      width: "100%",
-      transition: "background-color 0.2s ease",
-      boxShadow: "0 2px 5px rgba(59, 130, 246, 0.2)",
-      '&:hover': {
-        backgroundColor: "#2563eb",
-      }
-    },
-  
-
-
-
-  
+  doctorTooltipRight: {
+    position: "absolute",
+    top: "250%",
+    left: "calc(100% + 15px)",
+    transform: "translateY(-50%)",
+    backgroundColor: "#ffffff",
+    padding: "18px",
+    borderRadius: "10px",
+    width: "280px",
+    boxShadow: "1px 10px 20px rgba(2, 2, 2, 0.15)",
+    border: "1px solid #e0e0e0",
+    zIndex: 10,
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+    opacity: 0,
+    transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
+    pointerEvents: "none",
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  },
+  doctorProfileHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+  },
+  doctorImage: {
+    width: "56px",
+    height: "56px",
+    borderRadius: "50%",
+    objectFit: "cover",
+    backgroundColor: "#f5f7fa",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "22px",
+    color: "#64748b",
+    border: "2px solid #e2e8f0",
+  },
+  doctorInfo: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+  },
+  doctorName: {
+    fontWeight: "600",
+    fontSize: "15px",
+    color: "#1e293b",
+    letterSpacing: "0.2px",
+  },
+  doctorMeta: {
+    fontSize: "12px",
+    color: "#64748b",
+    lineHeight: "1.4",
+  },
+  doctorRating: {
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",
+    color: "#f59e0b",
+    fontWeight: "500",
+  },
+  doctorDetails: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    fontSize: "13px",
+    color: "#475569",
+    padding: "8px 0",
+    borderTop: "1px solid #f1f5f9",
+    borderBottom: "1px solid #f1f5f9",
+    margin: "6px 0",
+  },
+  detailRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+  },
+  detailIcon: {
+    color: "#94a3b8",
+    minWidth: "16px",
+    display: "flex",
+    justifyContent: "center",
+  },
+  messageButton: {
+    backgroundColor: "#3b82f6",
+    color: "white",
+    border: "none",
+    padding: "10px",
+    borderRadius: "6px",
+    fontWeight: "600",
+    fontSize: "13px",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "6px",
+    marginTop: "4px",
+    width: "100%",
+    transition: "background-color 0.2s ease",
+    boxShadow: "0 2px 5px rgba(59, 130, 246, 0.2)",
+    '&:hover': {
+      backgroundColor: "#2563eb",
+    }
+  },
   modalOverlay: {
     position: "fixed",
     top: 0,
@@ -437,15 +416,23 @@ const spin = `
     100% { transform: rotate(360deg); }
   }
 `;
+const pulseAnimation = `
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+`;
 const styleSheet = document.styleSheets[0];
 styleSheet.insertRule(spin, styleSheet.cssRules.length);
+styleSheet.insertRule(pulseAnimation, styleSheet.cssRules.length);
 
 const SingleData = () => {
   const { addBooking } = useBooking();
   const { bookings } = useBooking();
   const { id } = useParams();
   const navigate = useNavigate();
- 
+
   const [loading, setLoading] = useState(true);
   const [service, setService] = useState(null);
   const [network, setNetwork] = useState("");
@@ -461,19 +448,10 @@ const SingleData = () => {
     paymentMethod: "",
   });
 
-  // ----------------------------------------------
-  const pulseAnimation = `
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-  }
-`;
-
-// Add the animation to your stylesheet
-const styleSheet = document.styleSheets[0];
-styleSheet.insertRule(pulseAnimation, styleSheet.cssRules.length);
-// --------------------------------------------------------
+  // Initialize EmailJS with your public key
+  useEffect(() => {
+    emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your EmailJS Public Key
+  }, []);
 
   // Scroll to top when component mounts or id changes
   useEffect(() => {
@@ -534,18 +512,56 @@ styleSheet.insertRule(pulseAnimation, styleSheet.cssRules.length);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    addBooking({
+    
+    const bookingDetails = {
       serviceName: service.s_name,
       hospitalName: service.h_name,
       doctorName: service.d_name,
       finalAmount: finalAmount,
       serviceType: selectedServiceType || service.types[0]?.type,
-      paymentMethod: formData.paymentMethod
-    });
-    alert(`Booking confirmed! Confirmation email sent to ${formData.email}`);
+      paymentMethod: formData.paymentMethod,
+    };
+  
+    // Add booking to context
+    addBooking(bookingDetails);
+  
+    // Prepare email parameters
+    const emailParams = {
+      name: formData.name,
+      email: formData.email,
+      serviceName: bookingDetails.serviceName,
+      hospitalName: bookingDetails.hospitalName,
+      doctorName: bookingDetails.doctorName,
+      finalAmount: bookingDetails.finalAmount.toLocaleString(),
+      serviceType: bookingDetails.serviceType,
+      paymentMethod: bookingDetails.paymentMethod,
+    };
+  
+    // ✅ Add Public Key here
+    emailjs
+      .send(
+        "service_ow1tk3g",        // Your EmailJS Service ID
+        "template_v0l4kbo",       // Your EmailJS Template ID
+        emailParams,
+        "cvQb1RbiweDo5BR16"    // 🔥 Your Correct EmailJS Public Key here
+      )
+      .then(
+        (response) => {
+          console.log("Email sent successfully!", response.status, response.text);
+          alert(`Booking confirmed! Confirmation email sent to ${formData.email}`);
+        },
+        (error) => {
+          console.error("Failed to send email:", error);
+          alert("Booking confirmed, but failed to send confirmation email. Please contact support.");
+        }
+      );
+  
+    // Reset form and close modal
     setShowModal(false);
     setFormData({ name: "", email: "", phone: "", paymentMethod: "" });
   };
+  
+  // --------------------------------------------
 
   const applyStyles = (...styleObjects) => {
     return Object.assign({}, ...styleObjects, {
@@ -575,117 +591,117 @@ styleSheet.insertRule(pulseAnimation, styleSheet.cssRules.length);
             <div style={styles.serviceMeta}>
               <span style={styles.serviceCode}>Code: {service.s_code}</span>
               <div style={styles.providerInfo}>
-              <span
-  style={{
-    color: "#e74c3c",
-    cursor: "pointer",
-    position: "relative",
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "6px",
-  }}
-  onClick={handleHospitalClick}
-  onMouseEnter={(e) => {
-    e.currentTarget.querySelector(".tooltip").style.opacity = "1";
-    e.currentTarget.querySelector(".tooltip").style.transform = "translateY(-10px)";
-  }}
-  onMouseLeave={(e) => {
-    e.currentTarget.querySelector(".tooltip").style.opacity = "0";
-    e.currentTarget.querySelector(".tooltip").style.transform = "translateY(0)";
-  }}
->
-  <FaHospital />
-  {service.h_name}
-  <span
-    className="tooltip"
-    style={{
-      position: "absolute",
-      top: "-40px",
-      left: "50%",
-      transform: "translateX(-50%)",
-      backgroundColor: "#2c3e50",
-      color: "white",
-      padding: "8px 12px",
-      borderRadius: "4px",
-      fontSize: "12px",
-      fontWeight: "500",
-      whiteSpace: "nowrap",
-      opacity: "0",
-      transition: "opacity 0.3s ease, transform 0.3s ease",
-      zIndex: "10",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-    }}
-  >
-    Click to open Hospital Details
-  </span>
-</span>
+                <span
+                  style={{
+                    color: "#e74c3c",
+                    cursor: "pointer",
+                    position: "relative",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px",
+                  }}
+                  onClick={handleHospitalClick}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.querySelector(".tooltip").style.opacity = "1";
+                    e.currentTarget.querySelector(".tooltip").style.transform = "translateY(-10px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.querySelector(".tooltip").style.opacity = "0";
+                    e.currentTarget.querySelector(".tooltip").style.transform = "translateY(0)";
+                  }}
+                >
+                  <FaHospital />
+                  {service.h_name}
+                  <span
+                    className="tooltip"
+                    style={{
+                      position: "absolute",
+                      top: "-40px",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      backgroundColor: "#2c3e50",
+                      color: "white",
+                      padding: "8px 12px",
+                      borderRadius: "4px",
+                      fontSize: "12px",
+                      fontWeight: "500",
+                      whiteSpace: "nowrap",
+                      opacity: "0",
+                      transition: "opacity 0.3s ease, transform 0.3s ease",
+                      zIndex: "10",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                    }}
+                  >
+                    Click to open Hospital Details
+                  </span>
+                </span>
 
-<div style={styles.doctorHoverContainer}>
-  <span 
-    style={{ 
-      color: "#3498db",
-      cursor: "pointer",
-      display: "inline-flex",
-      alignItems: "center",
-      gap: "6px",
-    }}
-    onMouseEnter={(e) => {
-      e.currentTarget.nextSibling.style.opacity = "1";
-      e.currentTarget.nextSibling.style.transform = "translateY(-50%) translateX(0)";
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.nextSibling.style.opacity = "0";
-      e.currentTarget.nextSibling.style.transform = "translateY(-50%) translateX(-10px)";
-    }}
-  >
-    <FaUserMd /> Dr. {service.d_name}
-  </span>
-  <div style={styles.doctorTooltipRight}>
-    <div style={styles.doctorProfileHeader}>
-      <div style={styles.doctorImage}>
-        {service.d_img ? (
-          <img 
-            src={service.d_img} 
-            alt={`Dr. ${service.d_name}`} 
-            style={{ width: "100%", height: "100%", borderRadius: "50%" }}
-          />
-        ) : (
-          <FaUser />
-        )}
-      </div>
-      <div style={styles.doctorInfo}>
-        <div style={styles.doctorName}>Dr. {service.d_name}</div>
-        <div style={styles.doctorMeta}>
-          <span style={styles.doctorRating}>
-            ⭐ {service.rating || "4.8"} ({service.reviews || "120"} reviews)
-          </span>
-        </div>
-        <div style={styles.doctorMeta}>
-          {service.experience || "8"} years experience
-        </div>
-      </div>
-    </div>
-    
-    <div style={styles.doctorDetails}>
-      <div style={styles.detailRow}>
-        <FaUserMd size={12} />
-        <span>Specialization: {service.s_name || "multi"}</span>
-      </div>
-      <div style={styles.detailRow}>
-        <FaHospital size={12} />
-        <span>Operations: {service.operations || "1,200+"}</span>
-      </div>
-      <div style={styles.detailRow}>
-        <FaMapMarkerAlt size={12} />
-        <span>{service.h_name || "City General Hospital"}</span>
-      </div>
-    </div>
-    
-    <button style={styles.messageButton}>
-      <FaEnvelope size={12} /> Message
-    </button>
-  </div>
-</div>
+                <div style={styles.doctorHoverContainer}>
+                  <span
+                    style={{
+                      color: "#3498db",
+                      cursor: "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.nextSibling.style.opacity = "1";
+                      e.currentTarget.nextSibling.style.transform = "translateY(-50%) translateX(0)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.nextSibling.style.opacity = "0";
+                      e.currentTarget.nextSibling.style.transform = "translateY(-50%) translateX(-10px)";
+                    }}
+                  >
+                    <FaUserMd /> Dr. {service.d_name}
+                  </span>
+                  <div style={styles.doctorTooltipRight}>
+                    <div style={styles.doctorProfileHeader}>
+                      <div style={styles.doctorImage}>
+                        {service.d_img ? (
+                          <img
+                            src={service.d_img}
+                            alt={`Dr. ${service.d_name}`}
+                            style={{ width: "100%", height: "100%", borderRadius: "50%" }}
+                          />
+                        ) : (
+                          <FaUser />
+                        )}
+                      </div>
+                      <div style={styles.doctorInfo}>
+                        <div style={styles.doctorName}>Dr. {service.d_name}</div>
+                        <div style={styles.doctorMeta}>
+                          <span style={styles.doctorRating}>
+                            ⭐ {service.rating || "4.8"} ({service.reviews || "120"} reviews)
+                          </span>
+                        </div>
+                        <div style={styles.doctorMeta}>
+                          {service.experience || "8"} years experience
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={styles.doctorDetails}>
+                      <div style={styles.detailRow}>
+                        <FaUserMd size={12} />
+                        <span>Specialization: {service.s_name || "multi"}</span>
+                      </div>
+                      <div style={styles.detailRow}>
+                        <FaHospital size={12} />
+                        <span>Operations: {service.operations || "1,200+"}</span>
+                      </div>
+                      <div style={styles.detailRow}>
+                        <FaMapMarkerAlt size={12} />
+                        <span>{service.h_name || "City General Hospital"}</span>
+                      </div>
+                    </div>
+
+                    <button style={styles.messageButton}>
+                      <FaEnvelope size={12} /> Message
+                    </button>
+                  </div>
+                </div>
               </div>
               <p style={styles.address}>
                 <FaMapMarkerAlt color="red" /> {service.h_address}
@@ -875,52 +891,52 @@ styleSheet.insertRule(pulseAnimation, styleSheet.cssRules.length);
               <button style={styles.btnSecondary}>
                 <FaPhone /> Contact Hospital
               </button>
-              <button 
-      style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        backgroundColor: '#3498db',
-        color: 'white',
-        border: 'none',
-        padding: '15px 25px',
-        borderRadius: '50px',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-        zIndex: 100,
-        fontSize: '16px',
-        fontWeight: '600',
-        transition: 'all 0.3s ease',
-        '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: '0 6px 12px rgba(0,0,0,0.3)'
-        }
-      }}
-      onClick={() => navigate('/bookings')}
-    >
-      <FaClipboardList size={18} />
-      My Bookings
-      {bookings.length > 0 && (
-        <span style={{
-          backgroundColor: '#e74c3c',
-          color: 'white',
-          borderRadius: '50%',
-          width: '24px',
-          height: '24px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '12px',
-          marginLeft: '8px',
-          animation: 'pulse 1.5s infinite'
-        }}>
-          {bookings.length}
-        </span>
-      )}
-    </button>
+              <button
+                style={{
+                  position: 'fixed',
+                  bottom: '20px',
+                  right: '20px',
+                  backgroundColor: '#3498db',
+                  color: 'white',
+                  border: 'none',
+                  padding: '15px 25px',
+                  borderRadius: '50px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+                  zIndex: 100,
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 6px 12px rgba(0,0,0,0.3)'
+                  }
+                }}
+                onClick={() => navigate('/bookings')}
+              >
+                <FaClipboardList size={18} />
+                My Bookings
+                {bookings.length > 0 && (
+                  <span style={{
+                    backgroundColor: '#e74c3c',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: '24px',
+                    height: '24px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                    marginLeft: '8px',
+                    animation: 'pulse 1.5s infinite'
+                  }}>
+                    {bookings.length}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
         </div>
